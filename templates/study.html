@@ -1,0 +1,78 @@
+
+{% extends "layout.html" %}
+{% block content %}
+
+学習者：{{ name }}
+<br>
+再生回数：{{ loop_num }}
+<br>
+進捗：<div id="progress" style=" display: inline-block; _display: inline">---回/{{ loop_num }}回</div>  <!-- 改行させたくないのでstyle追加 -->
+<br>
+再生中:<div id="music_path" style=" display: inline-block; _display: inline">---</div>  <!-- 改行させたくないのでstyle追加 -->
+
+<audio id="audio"></audio>
+<br>
+<img id="img"></img>
+<hr>
+
+
+
+
+<form action="/history" method="post">
+    <input type="submit" name="test" id="test" value="test">
+</form>
+
+
+
+
+<script type="text/javascript">
+    let index = 0;
+    const my_url = "https://sgry-fastapi-test.herokuapp.com/static/"
+    // const my_url = "http://127.0.0.1:8000/static/"
+    const music_list = {{ rand_music_paths|tojson }}
+    const img_list = {{ rand_img_paths|tojson }}
+    
+    const audio = new Audio()
+    // const audio = document.createElement('audio');
+    document.body.appendChild(audio)
+    audio.controls = true;
+    audio.volume = 0.2; 
+    audio.src = my_url + "music/" + music_list[0];
+    audio.play();
+    console.log(music_list[0])
+
+    document.write("<br>")
+
+    const img = new Image()
+    document.body.appendChild(img)
+    img.width = 700; // 横サイズ（px）
+    img.src = my_url + "img/" + img_list[0];
+
+        // htmlの中身を変更
+        progress.innerHTML = index + 1  + "回/{{ loop_num }}回"
+        music_path.innerHTML = music_list[index]
+    
+    audio.addEventListener('ended', function(){
+        index++;
+        if (index < music_list.length){
+            audio.src = my_url + "music/" + music_list[index];
+            audio.play();
+            console.log(music_list[index])
+
+            img.src = my_url + "img/" + img_list[index];
+
+            progress.innerHTML = index + 1  + "回/{{ loop_num }}回"
+            music_path.innerHTML = music_list[index]
+        }
+        else {
+            alert("終了しました！")
+            // document.form1.action = `/history?name=${music_list[index]}.html`;
+            // document.form1.submit();
+        }
+    })
+
+</script>
+
+
+
+{% endblock %}

@@ -1,0 +1,17 @@
+
+{% extends "layout.html" %}
+{% block content %}
+
+<form action="/index" method="POST">
+
+    <h3>IDとパスワードを入力</h3>
+    <div>
+        <input type="id" name="id" placeholder="ID">
+        <br><br>
+        <input type="password" name="pw" placeholder="パスワード">
+    </div>
+    <br>
+    <input type="submit" value="認証">
+</form>
+
+{% endblock %}

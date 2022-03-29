@@ -1,0 +1,27 @@
+
+{% extends "layout.html" %}
+{% block content %}
+
+<form action="/study" method="post">
+    学習者:
+    <select name="name">
+        <option value="Satoru">惺</option>
+        <option value="Kurumi">来実</optoin>
+        <option value="Iroha">彩葉</option>
+        <option value="Shigeru">秀</option>
+        <option value="Ayako">彩子</option>
+    </select>
+    <br>
+    
+    再生回数:
+    <select name="loop_num">
+        <option value=100>100</optoin>
+        <option value=50>50</option>
+        <option value=30>30</option>
+        <option value=1>1</option>
+    </select>
+    <br>
+    <input type="submit" value="はじめる">
+</form>
+    
+{% endblock %}
