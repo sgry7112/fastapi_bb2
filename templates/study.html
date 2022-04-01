@@ -16,19 +16,26 @@
 <hr>
 
 <!-- ajax cdn -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script> -->
+<script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
 <script type="text/javascript">
 
-    function ajax(music_name){        
+    function ajax(music_name, loop){        
         $.ajax({
         type:"GET",
         url: "./iteration",
         dataType: "json",
-        data: {music: music_name},
-        success: function(){
-            console.log(music_name);
-        }      
-        })
+        data: {music: music_name}
+        }).done(function(){
+            console.log((index + 1) + "/" + loop + ":" + music_name);
+        }).fail(function(){
+            alert("Error");
+        }).always(function(){
+            console.log("DB iteration 登録");
+        });
     };
 
     function ajax2(loop_num){        
@@ -36,11 +43,15 @@
         type:"GET",
         url: "./history",
         dataType: "json",
-        data: {loop: loop_num},
-        success: function(){
-            console.log(loop_num);
-        }      
-        })
+        data: {loop: loop_num}
+        }).done(function(){
+            console.log("終了しました");
+        }).fail(function(){
+            console.log("fail");
+        }).always(function(){
+            console.log("DB history 登録");
+        });
+    
     };
 
 
@@ -71,7 +82,7 @@
     music_path.innerHTML = music_list[index]
     
     // get通信実行(DB更新)
-    ajax(music_list[index])
+    ajax(music_list[index], loop)
 
     // 2回目以降の再生プログラム
     audio.addEventListener('ended', function(){
@@ -86,13 +97,15 @@
             music_path.innerHTML = music_list[index]
 
             // get通信実行(DB更新)
-            ajax(music_list[index])
+            ajax(music_list[index], loop)
 
+            if (index + 1 == loop){
+                ajax2(loop)
+            }
 
         }
         else {
-            ajax2(loop)
-            // alert("終了しました！")
+            alert("終了しました！")
         }
     })
     

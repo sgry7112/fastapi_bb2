@@ -87,7 +87,7 @@ async def study(request: Request, credentials: HTTPBasicCredentials = Depends(se
 
 @app.get("/iteration/")
 async def iteration(music: str, credentials: HTTPBasicCredentials = Depends(security), ):
-    print('iteration')
+    
     # 認証
     username = auth(credentials)
 
@@ -112,7 +112,7 @@ async def iteration(music: str, credentials: HTTPBasicCredentials = Depends(secu
 
 @app.get("/history/")
 async def history(loop: int, credentials: HTTPBasicCredentials = Depends(security), ):
-    print("history")
+
     # 認証
     username = auth(credentials)
 
