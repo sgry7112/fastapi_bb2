@@ -8,10 +8,12 @@ from glob import glob
 from datetime import datetime
 import numpy as np
 import os
-import sqlite3
+import psycopg2
+import pandas as pd
+import warnings
+warnings.simplefilter('ignore')
 
 from auth import auth
-
 
 app = FastAPI(
     title='bb_english',
@@ -30,7 +32,8 @@ def login(request: Request, credentials: HTTPBasicCredentials = Depends(security
     # 認証
     username = auth(credentials)
     return templates.TemplateResponse('index.html',
-                                      {'request': request})
+                                      {'request': request,
+                                       'username': username.upper()})
 
 
 @app.post("/study")
@@ -39,14 +42,12 @@ async def study(request: Request, credentials: HTTPBasicCredentials = Depends(se
     # 認証
     username = auth(credentials)
 
-    global name
     global loop_num
     global rand_music_paths
     global rand_img_paths
 
     # フォームからデータ取得
     data = await request.form()
-    name = str(data['name'])
     loop_num = int(data['loop_num'])
 
     music_paths = glob("./static/music/*")
@@ -57,14 +58,14 @@ async def study(request: Request, credentials: HTTPBasicCredentials = Depends(se
         rand_music_paths.append(os.path.split(music_path)[-1])
 
         img_path = ""
-        if "ダイヤ" in music_path:
-            img_path += 'ダイヤ'
-        elif "スペード" in music_path:
-            img_path += 'スペード'
-        elif "ハート" in music_path:
-            img_path += 'ハート'
-        elif "クラブ" in music_path:
-            img_path += 'クラブ'
+        if "dia" in music_path:
+            img_path += 'dia'
+        elif "spade" in music_path:
+            img_path += 'dia'
+        elif "heart" in music_path:
+            img_path += 'heart'
+        elif "club" in music_path:
+            img_path += 'club'
         
         if ("01" in music_path)|("02" in music_path)|("03" in music_path)|("04" in music_path)|("05" in music_path)|("06" in music_path)|("07" in music_path)|("08" in music_path):
             img_path += "1.JPG"
@@ -75,20 +76,33 @@ async def study(request: Request, credentials: HTTPBasicCredentials = Depends(se
     return  templates.TemplateResponse(
         'study.html',
         {'request': request,
-         'name': name, 
+         'name': username, 
          'loop_num': loop_num,
          'rand_music_paths': rand_music_paths, 
          'rand_img_paths': rand_img_paths})
 
 
-@app.post("/history")
-async def history(request: Request, credentials: HTTPBasicCredentials = Depends(security)):
+@app.get("/history/")
+async def history(music: str, credentials: HTTPBasicCredentials = Depends(security), ):
+    
     # 認証
-    print('ttest')
-    conn = sqlite3.connect('./db.sqlite3')
-    c = conn.cursor()
-    now = datetime.now()
-    sql = f"insert into satoru (時刻, 内容) values('{now}', 'test') ;"
-    c.execute(sql)
+    username = auth(credentials)
+
+    db_url = "postgres://qwosamqjhsmjse:bdc36cd41f29cad53b026230c202df7ff08f34b0a1ede8a6334f134cc146f45f@ec2-44-194-92-192.compute-1.amazonaws.com:5432/d79ilntrh62i11"
+    conn = psycopg2.connect(db_url)
+    cur = conn.cursor()
+    
+    music = music.split('.')[0]
+    sql = f"SELECT {music} FROM ITERATION WHERE 学習者='{username}' ;"
+    num = pd.read_sql(sql, conn)[music][0]
+
+    if num == None:
+        num = 1
+    else:
+        num += 1
+    
+    sql = f"UPDATE ITERATION SET {music} = {num} WHERE 学習者='{username}' ;"
+    cur.execute(sql)
     conn.commit()
-    return {'hello': 'world'}
+
+    return

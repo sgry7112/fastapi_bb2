@@ -7,11 +7,10 @@ def auth(credentials):
     username = credentials.username
     password = hashlib.md5(credentials.password.encode()).hexdigest()
 
-    user = 'satoru'
-    pw = hashlib.md5('yamazaki'.encode()).hexdigest()
-    print(pw)
+    user = ['Shigeru', 'Ayako', 'Iroha', 'Kurumi', 'Satoru']
+    pw = hashlib.md5('Yamazaki'.encode()).hexdigest()
 
-    if username != user or password != pw:
+    if (username not in user) or (password != pw):
         error = 'ユーザ名かパスワードが間違っています．'
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED,

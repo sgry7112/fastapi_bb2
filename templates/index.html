@@ -2,8 +2,9 @@
 {% extends "layout.html" %}
 {% block content %}
 
+<h1>Welcome {{ username }}</h1>
 <form action="/study" method="post">
-    学習者:
+    <!-- 学習者:
     <select name="name">
         <option value="Satoru">惺</option>
         <option value="Kurumi">来実</optoin>
@@ -11,7 +12,7 @@
         <option value="Shigeru">秀</option>
         <option value="Ayako">彩子</option>
     </select>
-    <br>
+    <br> -->
     
     再生回数:
     <select name="loop_num">

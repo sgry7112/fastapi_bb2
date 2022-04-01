@@ -15,32 +15,37 @@
 <img id="img"></img>
 <hr>
 
-
-
-
-<form action="/history" method="post">
-    <input type="submit" name="test" id="test" value="test">
-</form>
-
-
-
-
+<!-- ajax cdn -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 <script type="text/javascript">
-    let index = 0;
+
+    function ajax(music_name){        
+        $.ajax({
+        type:"GET",
+        url: "./history",
+        dataType: "json",
+        data: {music: music_name},
+        success: function(){
+            console.log(music_name);
+        }
+        
+        })
+    };
+
     const my_url = "https://sgry-fastapi-test.herokuapp.com/static/"
     // const my_url = "http://127.0.0.1:8000/static/"
     const music_list = {{ rand_music_paths|tojson }}
     const img_list = {{ rand_img_paths|tojson }}
-    
+
+    let index = 0;
     const audio = new Audio()
     // const audio = document.createElement('audio');
     document.body.appendChild(audio)
     audio.controls = true;
     audio.volume = 0.2; 
-    audio.src = my_url + "music/" + music_list[0];
+    audio.src = my_url + "music/" + music_list[index];
     audio.play();
-    console.log(music_list[0])
-
+    
     document.write("<br>")
 
     const img = new Image()
@@ -48,21 +53,29 @@
     img.width = 700; // 横サイズ（px）
     img.src = my_url + "img/" + img_list[0];
 
-        // htmlの中身を変更
-        progress.innerHTML = index + 1  + "回/{{ loop_num }}回"
-        music_path.innerHTML = music_list[index]
+    // htmlの中身を変更
+    progress.innerHTML = index + 1  + "回/{{ loop_num }}回"
+    music_path.innerHTML = music_list[index]
     
+    // get通信実行(DB更新)
+    ajax(music_list[index])
+
+    // 2回目以降の再生プログラム
     audio.addEventListener('ended', function(){
         index++;
         if (index < music_list.length){
             audio.src = my_url + "music/" + music_list[index];
             audio.play();
-            console.log(music_list[index])
-
+            
             img.src = my_url + "img/" + img_list[index];
 
             progress.innerHTML = index + 1  + "回/{{ loop_num }}回"
             music_path.innerHTML = music_list[index]
+
+            // get通信実行(DB更新)
+            ajax(music_list[index])
+
+
         }
         else {
             alert("終了しました！")
