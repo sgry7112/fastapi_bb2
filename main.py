@@ -11,6 +11,7 @@ import os
 import psycopg2
 import pandas as pd
 import datetime
+import pytz
 
 import warnings
 warnings.simplefilter('ignore')
@@ -118,7 +119,7 @@ async def history(loop: int, credentials: HTTPBasicCredentials = Depends(securit
     db_url = "postgres://qwosamqjhsmjse:bdc36cd41f29cad53b026230c202df7ff08f34b0a1ede8a6334f134cc146f45f@ec2-44-194-92-192.compute-1.amazonaws.com:5432/d79ilntrh62i11"
     conn = psycopg2.connect(db_url)
     cur = conn.cursor()
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
     sql = f"INSERT INTO HISTORY (学習者, 学習日, 再生回数) VALUES('{username}', '{now}', {loop}) ;"
     cur.execute(sql)
     conn.commit()
