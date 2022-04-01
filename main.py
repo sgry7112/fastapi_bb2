@@ -10,6 +10,8 @@ import numpy as np
 import os
 import psycopg2
 import pandas as pd
+import datetime
+
 import warnings
 warnings.simplefilter('ignore')
 
@@ -82,9 +84,9 @@ async def study(request: Request, credentials: HTTPBasicCredentials = Depends(se
          'rand_img_paths': rand_img_paths})
 
 
-@app.get("/history/")
-async def history(music: str, credentials: HTTPBasicCredentials = Depends(security), ):
-    
+@app.get("/iteration/")
+async def iteration(music: str, credentials: HTTPBasicCredentials = Depends(security), ):
+    print('iteration')
     # 認証
     username = auth(credentials)
 
@@ -100,8 +102,24 @@ async def history(music: str, credentials: HTTPBasicCredentials = Depends(securi
         num = 1
     else:
         num += 1
-    
     sql = f"UPDATE ITERATION SET {music} = {num} WHERE 学習者='{username}' ;"
+    cur.execute(sql)
+    conn.commit()
+
+    return
+
+
+@app.get("/history/")
+async def history(loop: int, credentials: HTTPBasicCredentials = Depends(security), ):
+    print("history")
+    # 認証
+    username = auth(credentials)
+
+    db_url = "postgres://qwosamqjhsmjse:bdc36cd41f29cad53b026230c202df7ff08f34b0a1ede8a6334f134cc146f45f@ec2-44-194-92-192.compute-1.amazonaws.com:5432/d79ilntrh62i11"
+    conn = psycopg2.connect(db_url)
+    cur = conn.cursor()
+    now = datetime.datetime.now()
+    sql = f"INSERT INTO HISTORY (学習者, 学習日, 再生回数) VALUES('{username}', '{now}', {loop}) ;"
     cur.execute(sql)
     conn.commit()
 

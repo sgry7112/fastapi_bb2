@@ -22,20 +22,33 @@
     function ajax(music_name){        
         $.ajax({
         type:"GET",
-        url: "./history",
+        url: "./iteration",
         dataType: "json",
         data: {music: music_name},
         success: function(){
             console.log(music_name);
-        }
-        
+        }      
         })
     };
+
+    function ajax2(loop_num){        
+        $.ajax({
+        type:"GET",
+        url: "./history",
+        dataType: "json",
+        data: {loop: loop_num},
+        success: function(){
+            console.log(loop_num);
+        }      
+        })
+    };
+
 
     const my_url = "https://sgry-fastapi-test2.herokuapp.com/static/"
     // const my_url = "http://127.0.0.1:8000/static/"
     const music_list = {{ rand_music_paths|tojson }}
     const img_list = {{ rand_img_paths|tojson }}
+    const loop = {{ loop_num }}
 
     let index = 0;
     const audio = new Audio()
@@ -79,8 +92,7 @@
         }
         else {
             alert("終了しました！")
-            // document.form1.action = `/history?name=${music_list[index]}.html`;
-            // document.form1.submit();
+            ajax2(loop)
         }
     })
 
